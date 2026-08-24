@@ -1,5 +1,5 @@
 /**
- * BHUSHAN SHELKE PORTFOLIO - JAVASCRIPT (bhushanshelke.dev)
+ * BHUSHAN SHELKE PORTFOLIO - SCRIPT (bhushanshelke.dev / github.io)
  * Interactive UI behaviors, Project Filtering, Skill Search, Theming & Toasts
  */
 
@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const themeToggle = document.getElementById('themeToggle');
   const htmlRoot = document.documentElement;
 
-  // Retrieve saved theme or prefer dark by default
   const savedTheme = localStorage.getItem('portfolio-theme') || 'dark';
   htmlRoot.setAttribute('data-theme', savedTheme);
 
@@ -25,86 +24,15 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ------------------------------------------------------------------------
-     2. MOBILE NAVIGATION DRAWER
+     2. PROJECT CATEGORY FILTERING
      ------------------------------------------------------------------------ */
-  const mobileToggle = document.getElementById('mobileToggle');
-  const navMenu = document.getElementById('navMenu');
-  const navLinks = document.querySelectorAll('.nav-link');
-
-  if (mobileToggle && navMenu) {
-    mobileToggle.addEventListener('click', () => {
-      const isOpen = navMenu.classList.toggle('open');
-      mobileToggle.setAttribute('aria-expanded', isOpen);
-    });
-
-    // Close menu when clicking on any navigation link
-    navLinks.forEach(link => {
-      link.addEventListener('click', () => {
-        navMenu.classList.remove('open');
-        mobileToggle.setAttribute('aria-expanded', 'false');
-      });
-    });
-  }
-
-  /* ------------------------------------------------------------------------
-     3. HERO ROLE TYPING ANIMATION
-     ------------------------------------------------------------------------ */
-  const typedRoleElement = document.getElementById('typedRole');
-  const roles = [
-    'Scalable Big Data Pipelines',
-    'Production RAG Platforms',
-    'PySpark & Kafka Architectures',
-    'High-Throughput Microservices',
-    'Distributed Data Systems'
-  ];
-  let roleIndex = 0;
-  let charIndex = 0;
-  let isDeleting = false;
-  let typingSpeed = 80;
-
-  function typeRole() {
-    if (!typedRoleElement) return;
-
-    const currentRole = roles[roleIndex];
-    if (isDeleting) {
-      typedRoleElement.textContent = currentRole.substring(0, charIndex - 1);
-      charIndex--;
-      typingSpeed = 40;
-    } else {
-      typedRoleElement.textContent = currentRole.substring(0, charIndex + 1);
-      charIndex++;
-      typingSpeed = 90;
-    }
-
-    if (!isDeleting && charIndex === currentRole.length) {
-      typingSpeed = 1800; // Pause at full word
-      isDeleting = true;
-    } else if (isDeleting && charIndex === 0) {
-      isDeleting = false;
-      roleIndex = (roleIndex + 1) % roles.length;
-      typingSpeed = 400; // Pause before typing new word
-    }
-
-    setTimeout(typeRole, typingSpeed);
-  }
-
-  typeRole();
-
-  /* ------------------------------------------------------------------------
-     4. PROJECT CATEGORY FILTERING
-     ------------------------------------------------------------------------ */
-  const filterBtns = document.querySelectorAll('.filter-btn');
-  const projectCards = document.querySelectorAll('.project-card');
+  const filterBtns = document.querySelectorAll('.proj-tab');
+  const projectCards = document.querySelectorAll('.modern-project-card');
 
   filterBtns.forEach(btn => {
     btn.addEventListener('click', () => {
-      // Set active button
-      filterBtns.forEach(b => {
-        b.classList.remove('active');
-        b.setAttribute('aria-selected', 'false');
-      });
+      filterBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      btn.setAttribute('aria-selected', 'true');
 
       const filterValue = btn.getAttribute('data-filter');
 
@@ -121,49 +49,49 @@ document.addEventListener('DOMContentLoaded', () => {
           card.style.transform = 'translateY(10px)';
           setTimeout(() => {
             card.style.display = 'none';
-          }, 250);
+          }, 200);
         }
       });
     });
   });
 
   /* ------------------------------------------------------------------------
-     5. SKILLS LIVE SEARCH FILTER
+     3. SKILLS LIVE SEARCH FILTER
      ------------------------------------------------------------------------ */
   const skillSearch = document.getElementById('skillSearch');
-  const skillCategories = document.querySelectorAll('.skill-category-card');
+  const skillCards = document.querySelectorAll('.skill-modern-card');
 
   if (skillSearch) {
     skillSearch.addEventListener('input', (e) => {
       const query = e.target.value.toLowerCase().trim();
 
-      skillCategories.forEach(cat => {
-        const tags = cat.querySelectorAll('.skill-tag');
-        let categoryHasMatch = false;
+      skillCards.forEach(card => {
+        const chips = card.querySelectorAll('.pill-chip');
+        let cardHasMatch = false;
 
-        tags.forEach(tag => {
-          const tagText = tag.textContent.toLowerCase();
-          if (tagText.includes(query)) {
-            tag.style.display = 'inline-flex';
-            categoryHasMatch = true;
+        chips.forEach(chip => {
+          const text = chip.textContent.toLowerCase();
+          if (text.includes(query)) {
+            chip.style.display = 'inline-flex';
+            cardHasMatch = true;
           } else {
-            tag.style.display = query ? 'none' : 'inline-flex';
+            chip.style.display = query ? 'none' : 'inline-flex';
           }
         });
 
-        const headerText = cat.querySelector('h3').textContent.toLowerCase();
-        if (headerText.includes(query)) {
-          categoryHasMatch = true;
-          tags.forEach(t => t.style.display = 'inline-flex');
+        const badgeText = card.querySelector('.skill-cat-badge')?.textContent.toLowerCase() || '';
+        if (badgeText.includes(query)) {
+          cardHasMatch = true;
+          chips.forEach(c => c.style.display = 'inline-flex');
         }
 
-        cat.style.display = categoryHasMatch || !query ? 'block' : 'none';
+        card.style.display = cardHasMatch || !query ? 'block' : 'none';
       });
     });
   }
 
   /* ------------------------------------------------------------------------
-     6. CLIPBOARD COPY & TOAST NOTIFICATION
+     4. CLIPBOARD COPY & TOAST NOTIFICATION
      ------------------------------------------------------------------------ */
   const copyButtons = document.querySelectorAll('.copy-btn');
   const toast = document.getElementById('toast');
@@ -216,11 +144,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ------------------------------------------------------------------------
-     7. CONTACT FORM SUBMISSION HANDLER
+     5. CONTACT FORM SUBMISSION HANDLER
      ------------------------------------------------------------------------ */
   const contactForm = document.getElementById('contactForm');
   const formStatus = document.getElementById('formStatus');
-  const formSubmitBtn = document.getElementById('formSubmitBtn');
 
   if (contactForm) {
     contactForm.addEventListener('submit', (e) => {
@@ -239,49 +166,29 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // Generate mailto link for direct recruiter communication
       const mailtoUrl = `mailto:bhushanpatil6129@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent('From: ' + name + ' (' + email + ')
 
 ' + message)}`;
 
       if (formStatus) {
         formStatus.className = 'form-status success';
-        formStatus.innerHTML = '<i class="fa-solid fa-circle-check"></i> Thank you! Opening your email client to dispatch message...';
+        formStatus.innerHTML = '<i class="fa-solid fa-circle-check"></i> Opening your email client to dispatch message...';
       }
 
       setTimeout(() => {
         window.location.href = mailtoUrl;
         contactForm.reset();
-      }, 700);
+      }, 600);
     });
   }
 
   /* ------------------------------------------------------------------------
-     8. SCROLL-SPY ACTIVE NAVIGATION & BACK TO TOP BUTTON
+     6. BACK TO TOP BUTTON
      ------------------------------------------------------------------------ */
-  const sections = document.querySelectorAll('section[id]');
   const backToTopBtn = document.getElementById('backToTop');
 
   window.addEventListener('scroll', () => {
     const scrollY = window.pageYOffset;
-
-    // Active Nav Highlight
-    sections.forEach(section => {
-      const sectionHeight = section.offsetHeight;
-      const sectionTop = section.offsetTop - 120;
-      const sectionId = section.getAttribute('id');
-      const matchingLink = document.querySelector(`.nav-link[href="#${sectionId}"]`);
-
-      if (matchingLink) {
-        if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
-          matchingLink.classList.add('active');
-        } else {
-          matchingLink.classList.remove('active');
-        }
-      }
-    });
-
-    // Back to top visibility
     if (backToTopBtn) {
       if (scrollY > 400) {
         backToTopBtn.classList.add('visible');
